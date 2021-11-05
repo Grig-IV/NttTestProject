@@ -1,0 +1,33 @@
+﻿<Button x:Class="NttLibrary.Controls.KebabButton"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:NttLibrary.Controls"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        d:DesignHeight="50"
+        d:DesignWidth="50"
+        Background="Transparent"
+        Click="KebabButton_Click"
+        Foreground="White"
+        mc:Ignorable="d">
+    <Button.Template>
+        <ControlTemplate TargetType="Button">
+            <ControlTemplate.Resources>
+                <Style TargetType="Ellipse">
+                    <Setter Property="Width" Value="6" />
+                    <Setter Property="Height" Value="6" />
+                </Style>
+            </ControlTemplate.Resources>
+            <Border Width="{TemplateBinding Width}"
+                    Height="{TemplateBinding Height}"
+                    Background="{TemplateBinding Background}">
+                <StackPanel VerticalAlignment="Center">
+                    <Ellipse Fill="{TemplateBinding Foreground}" />
+                    <Ellipse Margin="0,5" Fill="{TemplateBinding Foreground}" />
+                    <Ellipse Fill="{TemplateBinding Foreground}" />
+                    <ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=PopupMenu}" />
+                </StackPanel>
+            </Border>
+        </ControlTemplate>
+    </Button.Template>
+</Button>

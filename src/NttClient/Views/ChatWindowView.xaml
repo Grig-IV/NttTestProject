@@ -1,0 +1,56 @@
+﻿<Window x:Class="NttClient.Views.ChatWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:NttLibrary.Controls;assembly=NttLibrary"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:libViews="clr-namespace:NttLibrary.Views;assembly=NttLibrary"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="NTT Client"
+        Width="500"
+        Height="700"
+        Icon="../NTT_Client_Logo.png"
+        mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/NttLibrary;component/Themes/MainTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <!--  Use chat control  -->
+    <libViews:ChatView>
+        <libViews:ChatView.TopRightCustomControl>
+            <!--  Set custom top right button of chat header  -->
+            <controls:KebabButton Width="15"
+                                  Height="50"
+                                  DockPanel.Dock="Right"
+                                  Foreground="Black">
+                <controls:KebabButton.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Opacity" Value="0.6" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.8" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </controls:KebabButton.Style>
+                <controls:KebabButton.PopupMenu>
+                    <Popup Width="200"
+                           Height="40"
+                           HorizontalAlignment="Center"
+                           Placement="Center"
+                           StaysOpen="True"
+                           VerticalOffset="25">
+                        <Button Background="White"
+                                Command="{Binding ChangeServerCommand}"
+                                FontSize="14">
+                            Change server
+                        </Button>
+                    </Popup>
+                </controls:KebabButton.PopupMenu>
+            </controls:KebabButton>
+        </libViews:ChatView.TopRightCustomControl>
+    </libViews:ChatView>
+</Window>

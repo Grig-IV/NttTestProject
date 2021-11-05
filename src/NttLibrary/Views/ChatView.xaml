@@ -1,0 +1,221 @@
+﻿<Grid x:Class="NttLibrary.Views.ChatView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:models="clr-namespace:NttLibrary.Models"
+      d:DesignHeight="600"
+      d:DesignWidth="450"
+      mc:Ignorable="d">
+    <Grid.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <!--  Recived message data template  -->
+        <DataTemplate DataType="{x:Type models:RecivedMessage}">
+            <Border x:Name="bubble"
+                    Margin="0,2,40,2"
+                    HorizontalAlignment="Left"
+                    Background="{StaticResource lightOrange}"
+                    CornerRadius="20 20 20 0"
+                    Visibility="{Binding IsReaded, Mode=OneWayToSource, Converter={StaticResource BoolToVis}}">
+                <DockPanel Margin="16,12" LastChildFill="False">
+                    <TextBlock DockPanel.Dock="Top"
+                               FontSize="17"
+                               Foreground="Black"
+                               Opacity="0.7"
+                               Text="{Binding Text}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Margin="0,4,0,0"
+                               HorizontalAlignment="Right"
+                               DockPanel.Dock="Top"
+                               FontFamily="Courier New"
+                               FontSize="12"
+                               Foreground="Black"
+                               Opacity="0.5"
+                               Text="{Binding Time, StringFormat=HH:mm}" />
+                </DockPanel>
+            </Border>
+        </DataTemplate>
+
+        <!--  Sended message data template  -->
+        <DataTemplate DataType="{x:Type models:SendedMessage}">
+            <Border x:Name="bubble"
+                    Margin="40,3,0,3"
+                    HorizontalAlignment="Right"
+                    CornerRadius="20 20 0 20">
+                <!--  Change border style if sending fail  -->
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="Red" />
+                        <Setter Property="ToolTip" Value="Sending fail" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SendingException}" Value="{x:Null}">
+                                <Setter Property="Background" Value="{StaticResource primaryOrange}" />
+                                <Setter Property="ToolTip" Value="{x:Null}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <DockPanel Margin="16,12" LastChildFill="False">
+                    <TextBlock DockPanel.Dock="Top"
+                               FontSize="17"
+                               Foreground="Black"
+                               Opacity="0.7"
+                               Text="{Binding Text}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Margin="0,4,0,0"
+                               HorizontalAlignment="Right"
+                               DockPanel.Dock="Top"
+                               FontFamily="Courier New"
+                               FontSize="12"
+                               Foreground="Black"
+                               Opacity="0.5"
+                               Text="{Binding Time, StringFormat=HH:mm}" />
+                </DockPanel>
+            </Border>
+        </DataTemplate>
+    </Grid.Resources>
+
+    <Grid.RowDefinitions>
+        <RowDefinition Height="100" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <!--  Chat Header  -->
+    <Border Grid.Row="0" MinWidth="450">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Offset="0" Color="#FFD89D" />
+                <GradientStop Offset="1" Color="#FFF7EB" />
+            </LinearGradientBrush>
+        </Border.Background>
+        <DockPanel Margin="20" LastChildFill="False">
+            <!--  Connection status  -->
+            <Rectangle Width="10"
+                       Height="50"
+                       Margin="0,0,10,0"
+                       DockPanel.Dock="Left"
+                       Opacity="0.6">
+                <Rectangle.Style>
+                    <Style TargetType="Rectangle">
+                        <Setter Property="Fill" Value="#69EA55" />
+                        <Setter Property="ToolTip" Value="Connected" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Connected}" Value="False">
+                                <Setter Property="Fill" Value="#D22727" />
+                                <Setter Property="ToolTip" Value="Disconnected" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Rectangle.Style>
+            </Rectangle>
+            <!--  Place for custom control  -->
+            <Border DockPanel.Dock="Right">
+                <ContentControl Content="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=TopRightCustomControl}" />
+            </Border>
+            <!--  Companion name  -->
+            <TextBlock VerticalAlignment="Center"
+                       DockPanel.Dock="Top"
+                       FontSize="28"
+                       FontWeight="Medium"
+                       Foreground="Black"
+                       Opacity="0.65"
+                       Text="{Binding ChatName}" />
+            <!--  Companion address  -->
+            <TextBlock DockPanel.Dock="Top"
+                       FontFamily="Courier New"
+                       FontSize="18"
+                       FontWeight="Regular"
+                       Foreground="Black"
+                       Opacity="0.85"
+                       Text="{Binding RemoteEndPoint}" />
+        </DockPanel>
+    </Border>
+
+    <!--  Message feed  -->
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+        <ItemsControl Padding="10" ItemsSource="{Binding Messages}" />
+    </ScrollViewer>
+
+    <!--  Type message TextBox  -->
+    <Border Grid.Row="2" Background="{StaticResource darkOrange}" />
+
+    <TextBlock Grid.Row="2"
+               Margin="30,0"
+               VerticalAlignment="Center"
+               FontSize="17"
+               Foreground="Black"
+               Opacity="0.3">
+        <TextBlock.Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding ElementName=messageTextBox, Path=IsFocused}" Value="False" />
+                            <Condition Binding="{Binding ElementName=messageTextBox, Path=Text}" Value="" />
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.Setters>
+                            <Setter Property="Visibility" Value="Visible" />
+                        </MultiDataTrigger.Setters>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+            </Style>
+        </TextBlock.Style>
+        Write a message...
+    </TextBlock>
+
+    <TextBox x:Name="messageTextBox"
+             Grid.Row="2"
+             MaxHeight="150"
+             Padding="30,20,100,20"
+             VerticalContentAlignment="Center"
+             Background="Transparent"
+             BorderThickness="0"
+             FontSize="17"
+             Foreground="Black"
+             Opacity="0.6"
+             Text="{Binding MessageField, UpdateSourceTrigger=PropertyChanged}"
+             TextWrapping="Wrap">
+        <TextBox.InputBindings>
+            <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
+        </TextBox.InputBindings>
+    </TextBox>
+
+    <!--  Send message Button  -->
+    <Button Grid.Row="2"
+            Margin="15,0"
+            HorizontalAlignment="Right"
+            Background="Transparent"
+            Command="{Binding SendMessageCommand}">
+        <Button.Style>
+            <Style TargetType="Button">
+                <Setter Property="Opacity" Value="0.8" />
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Opacity" Value="1" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Opacity" Value="0.5" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Button.Style>
+        <Button.Template>
+            <ControlTemplate TargetType="Button">
+                <Border Width="{TemplateBinding Width}"
+                        Height="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}">
+                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+            </ControlTemplate>
+        </Button.Template>
+        <Viewbox Height="25">
+            <Canvas Width="75" Height="50">
+                <Path Data="M 0,0 L 70,25 L 0,50 L 15,25 Z" Fill="White" />
+                <Path Data="M 15,25 L 40,25 L 12,20 Z" Fill="LightGray" />
+            </Canvas>
+        </Viewbox>
+    </Button>
+</Grid>

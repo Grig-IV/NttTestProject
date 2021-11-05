@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="NTT_Server_Logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NttLibrary\NttLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="NTT_Server_Logo.png" />
+  </ItemGroup>
+
+</Project>

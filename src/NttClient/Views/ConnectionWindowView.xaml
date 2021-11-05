@@ -1,0 +1,145 @@
+﻿<Window x:Class="NttClient.ConnectionWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:NttLibrary.Converters;assembly=NttLibrary"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:validationrules="clr-namespace:NttLibrary.ValidationRules;assembly=NttLibrary"
+        Title="NTT Client connection"
+        Width="380"
+        Height="400"
+        Icon="../NTT_Client_Logo.png"
+        ResizeMode="NoResize"
+        mc:Ignorable="d">
+    <Window.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontSize" Value="17" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Height" Value="35" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontFamily" Value="Courier New" />
+            <Setter Property="Padding" Value="5,0" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="90" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!--  Header  -->
+        <Border Grid.Row="0" Background="{StaticResource darkOrange}">
+            <TextBlock Margin="0,20,0,0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="25"
+                       FontWeight="Medium">
+                Create new connection:
+            </TextBlock>
+        </Border>
+
+        <!--  Input fields  -->
+        <StackPanel Grid.Row="1"
+                    Margin="40,0"
+                    VerticalAlignment="Center">
+            <Label>IP Address:</Label>
+            <TextBox x:Name="ipTextBox">
+                <TextBox.Text>
+                    <Binding Path="IpAddress">
+                        <Binding.ValidationRules>
+                            <validationrules:IpValidationRule ValidationStep="ConvertedProposedValue" />
+                        </Binding.ValidationRules>
+                        <Binding.Converter>
+                            <converters:IpConverter />
+                        </Binding.Converter>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <Label>Port:</Label>
+            <TextBox x:Name="portTextBox">
+                <TextBox.Text>
+                    <Binding Path="Port" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validationrules:UshortValidationRule ValidationStep="ConvertedProposedValue" />
+                        </Binding.ValidationRules>
+                        <Binding.Converter>
+                            <converters:NullableUshortConverter />
+                        </Binding.Converter>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+        </StackPanel>
+
+        <!--  Connection Button  -->
+        <Button Grid.Row="2"
+                Width="100"
+                Height="40"
+                Margin="0,5,0,30"
+                HorizontalAlignment="Center"
+                BorderThickness="0"
+                Command="{Binding CreateConnectionCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                FontSize="15"
+                FontWeight="Medium">
+            <Button.Style>
+                <Style TargetType="Button">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Setter Property="IsEnabled" Value="False" />
+                    <Setter Property="Background" Value="{StaticResource lightOrange}" />
+                    <Setter Property="Foreground" Value="Black" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource darkOrange}" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsConnecting}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Path=(Validation.HasError), ElementName=ipTextBox}" Value="False" />
+                                <Condition Binding="{Binding Path=(Validation.HasError), ElementName=portTextBox}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="IsEnabled" Value="True" />
+                        </MultiDataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border Width="{TemplateBinding Width}"
+                            Height="{TemplateBinding Height}"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="5">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                </ControlTemplate>
+            </Button.Template>
+            Connect
+        </Button>
+
+        <!--  TextBox that only appears while connecting  -->
+        <TextBlock Grid.Row="2"
+                   Margin="0,5,0,30"
+                   HorizontalAlignment="Center"
+                   FontSize="20"
+                   FontWeight="Medium">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsConnecting}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+            Connecting....
+        </TextBlock>
+    </Grid>
+</Window>
